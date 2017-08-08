@@ -10,7 +10,7 @@ b = tf.Variable(0.)
 k = tf.Variable(0.)
 y = k * x_data + b
 
-# 二次代价函数（误差均值）
+# 二次代价函数（方差）
 loss = tf.reduce_mean(tf.square(y_data - y))
 
 # 定义一个梯度下降法来进行训练
