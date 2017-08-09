@@ -20,9 +20,9 @@ y = tf.placeholder(tf.float32, [None, 10])
 # prediction = tf.nn.softmax(tf.matmul(x, W) + b)
 
 # 定义神经网络中间层（中间层是二十个神经元）
-# 定义一个1*10的权值矩阵
+# 定义一个784*20的权值矩阵
 Weights_L1 = tf.Variable(tf.random_normal([784, 20]))
-# 定义一个1*10的偏值矩阵
+# 定义一个1*20的偏值矩阵
 biases_L1 = tf.Variable(tf.zeros([1, 20]))
 # 定义网络总和函数
 Wx_plus_b_L1 = tf.matmul(x, Weights_L1) + biases_L1
@@ -30,10 +30,10 @@ Wx_plus_b_L1 = tf.matmul(x, Weights_L1) + biases_L1
 L1 = tf.nn.tanh(Wx_plus_b_L1)
 
 # 定义神经网络输出层
-# 定义一个10*1的权值矩阵
+# 定义一个20*10的权值矩阵
 Weights_L2 = tf.Variable(tf.random_normal([20, 10]))
-# 定义一个1*1的偏值矩阵
-biases_L2 = tf.Variable(tf.zeros([10]))
+# 定义一个1*10的偏值矩阵
+biases_L2 = tf.Variable(tf.zeros([1, 10]))
 # 定义网络总和函数（输出层的输入就是中间层的输出）
 Wx_plus_b_L2 = tf.matmul(L1, Weights_L2) + biases_L2
 # 激活函数，用双曲正切函数作用于信号输出的总和，即预测值
