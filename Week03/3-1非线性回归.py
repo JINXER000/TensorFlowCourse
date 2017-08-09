@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # 使用numpy生成200个随机点
-x_data = np.linspace(-0.5, 0.5, 200)[:, np.newaxis]  # 增加一个维度200*1矩阵
+x_data = np.linspace(-0.5, 0.5, 200)[:, np.newaxis]  # 增加一个维度形成200*1矩阵
 # 生成噪音
 noise = np.random.normal(0, 0.02, x_data.shape)
 # y = x^2 + noise （大概像一个U）
