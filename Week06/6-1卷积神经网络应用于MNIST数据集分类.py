@@ -36,16 +36,19 @@ def bias_variable(shape, name):
 
 # 卷积层
 def conv2d(x, W):
-    # x input tensor of shape `[batch, in_height, in_width, in_channels]`
-    # W filter / kernel tensor of shape [filter_height, filter_width, in_channels, out_channels]
-    # `strides[0] = strides[3] = 1`. strides[1]代表x方向的步长，strides[2]代表y方向的步长
-    # padding: A `string` from: `"SAME", "VALID"`
+    # x是一个四维的tensor [batch, in_height, in_width, in_channels] 1.批次 2.图片高 3.图片宽 4.通道数：黑白为1，彩色为3
+    # W是一个滤波器/卷积核 [filter_height, filter_width, in_channels, out_channels] 1.滤波器高 2.滤波器宽 3.输入通道数 4.输出通道数
+    # 固定 strides[0] = strides[3] = 1， strides[1]代表x方向的步长，strides[2]代表y方向的步长
+    # padding= 'SAME' / 'VALID' ; SAME在外围适当补0 , VALID不填补0
     return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
 
 
 # 池化层
 def max_pool_2x2(x):
-    # ksize [1,x,y,1]
+    # x是一个四维的tensor [batch, in_height, in_width, in_channels] 1.批次 2.图片高 3.图片宽 4.通道数：黑白为1，彩色为3
+    # ksize是窗口大小 [1,x,y,1] , 固定ksize[0] = ksize[3] = 1 ,  ksize[1]代表x方向的大小 , ksize[2]代表y方向的大小
+    # 固定 strides[0] = strides[3] = 1， strides[1]代表x方向的步长，strides[2]代表y方向的步长
+    # padding= 'SAME' / 'VALID' ; SAME在外围适当补0 , VALID不填补0
     return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
 
@@ -55,7 +58,7 @@ with tf.name_scope('input'):
     x = tf.placeholder(tf.float32, [None, 784], name='x-input')
     y = tf.placeholder(tf.float32, [None, 10], name='y-input')
     with tf.name_scope('x_image'):
-        # 改变x的格式转为4D的向量[batch, in_height, in_width, in_channels]`
+        # 改变x的格式转为4D的向量 [batch, in_height, in_width, in_channels] 1.批次 2.二维高 3.二维宽 4.通道数：黑白为1，彩色为3
         x_image = tf.reshape(x, [-1, 28, 28, 1], name='x_image')
 
 with tf.name_scope('Conv1'):
@@ -95,11 +98,11 @@ with tf.name_scope('Conv2'):
 with tf.name_scope('fc1'):
     # 初始化第一个全连接层的权值
     with tf.name_scope('W_fc1'):
-        W_fc1 = weight_variable([7 * 7 * 64, 1024], name='W_fc1')  # 上一场有7*7*64个神经元，全连接层有1024个神经元
+        W_fc1 = weight_variable([7 * 7 * 64, 1024], name='W_fc1')  # 上一层有7*7*64个神经元，全连接层有1024个神经元
     with tf.name_scope('b_fc1'):
         b_fc1 = bias_variable([1024], name='b_fc1')  # 1024个节点
 
-    # 把池化层2的输出扁平化为1维
+    # 把池化层2的输出扁平化为1维，-1代表任意值
     with tf.name_scope('h_pool2_flat'):
         h_pool2_flat = tf.reshape(h_pool2, [-1, 7 * 7 * 64], name='h_pool2_flat')
     # 求第一个全连接层的输出
@@ -108,7 +111,7 @@ with tf.name_scope('fc1'):
     with tf.name_scope('relu'):
         h_fc1 = tf.nn.relu(wx_plus_b1)
 
-    # keep_prob用来表示神经元的输出概率
+    # Dropout处理，keep_prob用来表示神经元的输出概率
     with tf.name_scope('keep_prob'):
         keep_prob = tf.placeholder(tf.float32, name='keep_prob')
     with tf.name_scope('h_fc1_drop'):
@@ -151,22 +154,24 @@ merged = tf.summary.merge_all()
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
-    train_writer = tf.summary.FileWriter('logs/train', sess.graph)
-    test_writer = tf.summary.FileWriter('logs/test', sess.graph)
-    for i in range(1001):
-        # 训练模型
-        batch_xs, batch_ys = mnist.train.next_batch(batch_size)
-        sess.run(train_step, feed_dict={x: batch_xs, y: batch_ys, keep_prob: 0.5})
-        # 记录训练集计算的参数
-        summary = sess.run(merged, feed_dict={x: batch_xs, y: batch_ys, keep_prob: 1.0})
-        train_writer.add_summary(summary, i)
-        # 记录测试集计算的参数
-        batch_xs, batch_ys = mnist.test.next_batch(batch_size)
-        summary = sess.run(merged, feed_dict={x: batch_xs, y: batch_ys, keep_prob: 1.0})
-        test_writer.add_summary(summary, i)
-
-        if i % 100 == 0:
-            test_acc = sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels, keep_prob: 1.0})
-            train_acc = sess.run(accuracy, feed_dict={x: mnist.train.images[:10000], y: mnist.train.labels[:10000],
-                                                      keep_prob: 1.0})
-            print("Iter " + str(i) + ", Testing Accuracy= " + str(test_acc) + ", Training Accuracy= " + str(train_acc))
+    # train_writer = tf.summary.FileWriter('logs/train', sess.graph)
+    # test_writer = tf.summary.FileWriter('logs/test', sess.graph)
+    for i in range(21):
+        for batch in range(n_batch):
+            # 训练模型
+            batch_xs, batch_ys = mnist.train.next_batch(batch_size)
+            sess.run(train_step, feed_dict={x: batch_xs, y: batch_ys, keep_prob: 0.6})  # 此处可以更改dropout值
+            # 记录训练集计算的参数
+            # summary = sess.run(merged, feed_dict={x: batch_xs, y: batch_ys, keep_prob: 1.0})
+            # train_writer.add_summary(summary, i)
+            # 记录测试集计算的参数
+            # batch_xs, batch_ys = mnist.test.next_batch(batch_size)
+            # summary = sess.run(merged, feed_dict={x: batch_xs, y: batch_ys, keep_prob: 1.0})
+            # test_writer.add_summary(summary, i)
+        test_acc = sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels, keep_prob: 1.0})
+        print("Iter " + str(i) + ", Testing Accuracy= " + str(test_acc))
+        # if i % 100 == 0:
+        #     test_acc = sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels, keep_prob: 1.0})
+        #     train_acc = sess.run(accuracy, feed_dict={x: mnist.train.images[:10000], y: mnist.train.labels[:10000],
+        #                                               keep_prob: 1.0})
+        #     print("Iter " + str(i) + ", Testing Accuracy= " + str(test_acc) + ", Training Accuracy= " + str(train_acc))
