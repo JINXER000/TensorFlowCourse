@@ -93,6 +93,3 @@ with tf.Session() as sess:
                 score = predictions[node_id]
                 print('%s (score = %.5f)' % (human_string, score))
             print()
-
-
-# In[ ]:
