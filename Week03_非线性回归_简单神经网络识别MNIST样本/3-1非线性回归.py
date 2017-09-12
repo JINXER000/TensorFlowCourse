@@ -2,14 +2,14 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 
-# 使用numpy生成200个随机点
+# 使用numpy在(-0.5,0.5)之间生成200个随机点
 x_data = np.linspace(-0.5, 0.5, 200)[:, np.newaxis]  # 增加一个维度形成200*1矩阵
-# 生成噪音
+# 生成与x_data数量一样的上下浮动的噪音
 noise = np.random.normal(0, 0.02, x_data.shape)
 # y = x^2 + noise （大概像一个U）
 y_data = np.square(x_data) + noise
 
-# 定义两个placeholder
+# 定义两个placeholder（200*1维）
 x = tf.placeholder(tf.float32, [None, 1])
 y = tf.placeholder(tf.float32, [None, 1])
 
