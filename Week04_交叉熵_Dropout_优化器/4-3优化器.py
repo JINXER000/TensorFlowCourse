@@ -1,8 +1,6 @@
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
-# In[2]:
-
 # 载入数据集
 mnist = input_data.read_data_sets("MNIST_data", one_hot=True)
 
@@ -25,6 +23,7 @@ prediction = tf.nn.softmax(tf.matmul(x, W) + b)
 loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=prediction))
 # 使用梯度下降法
 # train_step = tf.train.GradientDescentOptimizer(0.2).minimize(loss)
+# 此处使用Adam优化器对loss进行优化
 train_step = tf.train.AdamOptimizer(1e-2).minimize(loss)
 
 # 初始化变量
