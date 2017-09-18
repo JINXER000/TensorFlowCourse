@@ -2,23 +2,27 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 
-# 使用numpy在(-0.5,0.5)之间生成200个随机点
+# 使用numpy在(-0.5,0.5)之间生成等间距均匀200个随机点序列
 x_data = np.linspace(-0.5, 0.5, 200)[:, np.newaxis]  # 增加一个维度形成200*1矩阵
 # 生成与x_data数量一样的上下浮动的噪音
 noise = np.random.normal(0, 0.02, x_data.shape)
 # y = x^2 + noise （大概像一个U）
 y_data = np.square(x_data) + noise
 
-# 定义两个placeholder（200*1维）
+print('x_data = ', x_data)
+print('noise = ', noise)
+print('y_data = ', y_data)
+
+# 定义两个placeholder（N*1维）
 x = tf.placeholder(tf.float32, [None, 1])
 y = tf.placeholder(tf.float32, [None, 1])
 
 # 定义神经网络中间层（中间层是十个神经元）
-# 定义一个1*10的权值矩阵
+# 定义一个1*10的权值矩阵，正态分布默认均值为0，标准差为1
 Weights_L1 = tf.Variable(tf.random_normal([1, 10]))
 # 定义一个1*10的偏值矩阵
 biases_L1 = tf.Variable(tf.zeros([1, 10]))
-# 定义网络总和函数
+# 定义网络总和函数，本程序中此处理论上为200*10全连接网络
 Wx_plus_b_L1 = tf.matmul(x, Weights_L1) + biases_L1
 # 激活函数，用双曲正切函数作用于信号输出的总和
 L1 = tf.nn.tanh(Wx_plus_b_L1)
