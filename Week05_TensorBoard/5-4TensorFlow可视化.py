@@ -40,7 +40,7 @@ with tf.name_scope('input'):
 
 # 显示图片
 with tf.name_scope('input_reshape'):
-    image_shaped_input = tf.reshape(x, [-1, 28, 28, 1])  # 784转化为28*28，维度是1(黑白是1，彩色是3
+    image_shaped_input = tf.reshape(x, [-1, 28, 28, 1])  # 784转化为28*28，维度是1(黑白是1，彩色是3)
     tf.summary.image('input', image_shaped_input, 10)  # 放进去10张图片
 
 with tf.name_scope('layer'):
@@ -97,7 +97,7 @@ embed = config.embeddings.add()
 embed.tensor_name = embedding.name
 embed.metadata_path = DIR + 'projector/projector/metadata.tsv'
 embed.sprite.image_path = DIR + 'projector/data/mnist_10k_sprite.png'
-# 切分图片？
+# 切分图片
 embed.sprite.single_image_dim.extend([28, 28])
 # 可视化
 projector.visualize_embeddings(projector_writer, config)
