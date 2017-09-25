@@ -24,7 +24,7 @@ def variable_summaries(var):
 
 # 初始化权值
 def weight_variable(shape, name):
-    initial = tf.truncated_normal(shape, stddev=0.1)  # 生成一个截断的正态分布
+    initial = tf.truncated_normal(shape, stddev=0.1)  # 生成一个截断的正态分布，标准差为0.1
     return tf.Variable(initial, name=name)
 
 
@@ -58,7 +58,7 @@ with tf.name_scope('input'):
     x = tf.placeholder(tf.float32, [None, 784], name='x-input')
     y = tf.placeholder(tf.float32, [None, 10], name='y-input')
     with tf.name_scope('x_image'):
-        # 改变x的格式转为4D的向量 [batch, in_height, in_width, in_channels] 1.批次 2.二维高 3.二维宽 4.通道数：黑白为1，彩色为3
+        # 改变x的格式转为2维的向量 [batch, in_height, in_width, in_channels] 1.批次 2.二维高 3.二维宽 4.通道数：黑白为1，彩色为3
         x_image = tf.reshape(x, [-1, 28, 28, 1], name='x_image')
 
 with tf.name_scope('Conv1'):
@@ -98,7 +98,7 @@ with tf.name_scope('Conv2'):
 with tf.name_scope('fc1'):
     # 初始化第一个全连接层的权值
     with tf.name_scope('W_fc1'):
-        W_fc1 = weight_variable([7 * 7 * 64, 1024], name='W_fc1')  # 上一层有7*7*64个神经元，全连接层有1024个神经元
+        W_fc1 = weight_variable([7 * 7 * 64, 1024], name='W_fc1')  # 输入层有7*7*64个列的属性，全连接层有1024个隐藏神经元
     with tf.name_scope('b_fc1'):
         b_fc1 = bias_variable([1024], name='b_fc1')  # 1024个节点
 
@@ -111,7 +111,7 @@ with tf.name_scope('fc1'):
     with tf.name_scope('relu'):
         h_fc1 = tf.nn.relu(wx_plus_b1)
 
-    # Dropout处理，keep_prob用来表示神经元的输出概率
+    # Dropout处理，keep_prob用来表示处于激活状态的神经元比例
     with tf.name_scope('keep_prob'):
         keep_prob = tf.placeholder(tf.float32, name='keep_prob')
     with tf.name_scope('h_fc1_drop'):
@@ -120,7 +120,7 @@ with tf.name_scope('fc1'):
 with tf.name_scope('fc2'):
     # 初始化第二个全连接层
     with tf.name_scope('W_fc2'):
-        W_fc2 = weight_variable([1024, 10], name='W_fc2')
+        W_fc2 = weight_variable([1024, 10], name='W_fc2')  # 输入为1024个隐藏层神经元，输出层为10个数字可能结果
     with tf.name_scope('b_fc2'):
         b_fc2 = bias_variable([10], name='b_fc2')
     with tf.name_scope('wx_plus_b2'):
@@ -157,4 +157,4 @@ with tf.Session() as sess:
             batch_xs, batch_ys = mnist.train.next_batch(batch_size)
             sess.run(train_step, feed_dict={x: batch_xs, y: batch_ys, keep_prob: 0.6})  # 此处可以更改dropout值
         test_acc = sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels, keep_prob: 1.0})
-        print("Iter " + str(i) + ", Testing Accuracy= " + str(test_acc))
+        print("Training Times：" + str(i) + " , Testing Accuracy = " + str(test_acc))
